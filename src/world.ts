@@ -23,8 +23,8 @@ export type SharkKind = "classic" | "hammerhead" | "zebra" | "tiger" | "greatham
 /** Which sharks to put in the water; size is relative to the biggest. */
 export type SharkSpec = { kind: SharkKind; size: number };
 
-// One of each shark supported by the original engine.
-const DEFAULT_SHARKS: SharkSpec[] = [
+// The full selection of sharks supported by the original engine.
+const SHARK_SPECIES: SharkSpec[] = [
   { kind: "greathammer", size: 1 },
   { kind: "hammerhead", size: 0.86 },
   { kind: "classic", size: 0.9 },
@@ -34,6 +34,18 @@ const DEFAULT_SHARKS: SharkSpec[] = [
   { kind: "thresher", size: 0.82 },
   { kind: "nurse", size: 0.75 },
 ];
+
+/** Four sharks at a time, always including one of the two hammerheads. */
+function chooseSharks(): SharkSpec[] {
+  const hammerheads = SHARK_SPECIES.filter(shark => shark.kind === "hammerhead" || shark.kind === "greathammer");
+  const first = hammerheads[Math.floor(Math.random() * hammerheads.length)];
+  const rest = SHARK_SPECIES.filter(shark => shark !== first);
+  for (let i = rest.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [rest[i], rest[j]] = [rest[j], rest[i]];
+  }
+  return [first, ...rest.slice(0, 3)];
+}
 
 export interface Fish {
   x: number;
@@ -114,7 +126,7 @@ export class World {
 
   /** fishCount overrides the area-based population (the sidebar wants a single small school). */
   constructor(
-    private sharkSpecs: SharkSpec[] = DEFAULT_SHARKS,
+    private sharkSpecs: SharkSpec[] = chooseSharks(),
     private fishCount?: number,
   ) {}
 
