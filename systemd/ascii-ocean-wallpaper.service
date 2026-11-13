@@ -1,0 +1,12 @@
+[Unit]
+Description=Live ASCII ocean wallpaper
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.local/share/ascii-ocean-wallpaper/ocean-wallpaper
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
