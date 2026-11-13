@@ -479,6 +479,11 @@ export class World {
       dx += Math.cos(sh.heading + sh.wander) * 0.45;
       dy += Math.sin(sh.heading + sh.wander) * 0.45;
 
+      const pointerX = this.pointer.x - hx;
+      const pointerY = this.pointer.y - hy;
+      const pointerDistance = Math.hypot(pointerX, pointerY);
+      const followsPointer = this.pointer.active && pointerDistance < L * 2;
+
       // Hunt.
       if (time >= sh.retargetAt) {
         sh.target = this.findPrey(sh);
@@ -508,6 +513,17 @@ export class World {
         dy += ((rx / r) * sh.orbitDir + (ry / r) * radial * 0.9) * 0.55;
       }
 
+      // Within two body lengths, approach and circle the pointer.
+      // Radial correction brings distant sharks in and maintains a smooth orbit.
+      if (followsPointer && pointerDistance > 1e-3) {
+        const ux = pointerX / pointerDistance;
+        const uy = pointerY / pointerDistance;
+        const radial = clamp((pointerDistance - L * 0.65) / (L * 0.65), -1, 1);
+        dx = ux * radial * 2.5 - uy * sh.orbitDir;
+        dy = uy * radial * 2.5 + ux * sh.orbitDir;
+        hunting = false;
+      }
+
       // Give other sharks room.
       for (const other of sharks) {
         if (other === sh) continue;
@@ -517,7 +533,7 @@ export class World {
           const d = Math.hypot(ox, oy);
           const range = (L + other.length) * 0.45;
           if (d < range && d > 1e-3) {
-            const w = (1 - d / range) * 3;
+            const w = (1 - d / range) * (followsPointer ? 0.3 : 3);
             dx += (ox / d) * w;
             dy += (oy / d) * w;
           }
@@ -528,7 +544,7 @@ export class World {
       const ex = (hx - cxW) / (W * 0.3);
       const ey = (hy - cyW) / (H * 0.16);
       const e2 = ex * ex + ey * ey;
-      if (e2 < 1) {
+      if (e2 < 1 && !followsPointer) {
         const e = Math.sqrt(e2) || 1e-3;
         const w = (1 - e) * (hunting ? 1 : 2.5);
         dx += (ex / e) * w;
@@ -549,14 +565,14 @@ export class World {
 
       const desired = Math.atan2(dy, dx);
       // Sharks can't pivot on the spot: the turning circle grows with speed.
-      const agility = Math.min(hunting ? 1.7 + closing : 0.8, sh.speed / (L * 0.22));
+      const agility = Math.min(followsPointer ? 2.0 : hunting ? 1.7 + closing : 0.8, sh.speed / (L * 0.22));
       const maxTurn = agility * dt;
       const turned = clamp(angleDiff(sh.heading, desired), -maxTurn, maxTurn);
       sh.heading += turned;
       sh.turn += (turned / dt - sh.turn) * Math.min(1, dt * 3);
 
       const cruise = 30 + L * 0.04;
-      const targetSpeed = hunting ? cruise * (1.45 + closing * 1.5) : cruise;
+      const targetSpeed = followsPointer ? cruise * 2 : hunting ? cruise * (1.45 + closing * 1.5) : cruise;
       sh.speed += (targetSpeed - sh.speed) * Math.min(1, dt * 1.1);
       sh.phase += dt * (2 + sh.speed / 24);
 

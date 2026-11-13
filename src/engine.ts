@@ -49,6 +49,11 @@ export class OceanEngine {
     this.schedule();
   }
 
+  /** Update the pointer from a click-through desktop wallpaper host. */
+  setPointer(x: number, y: number, active: boolean) {
+    Object.assign(this.world.pointer, { x, y, active });
+  }
+
   destroy() {
     this.disposed = true;
     cancelAnimationFrame(this.raf);

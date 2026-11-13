@@ -1,6 +1,6 @@
 # ASCII Ocean Wallpaper
 
-An animated ASCII ocean for the Omarchy White theme: sharks swim, schools of fish move and reappear from random edges, and an ASCII Omarchy logo sits in the center. The ocean is simulated continuously rather than played back as a looped video.
+An animated ASCII ocean for the Omarchy White theme: sharks swim, schools of fish move and reappear from random edges, and an ASCII Omarchy logo sits in the center. The ocean is simulated continuously rather than played back as a looped video. When a shark comes within roughly two body lengths of the mouse cursor, it swims toward the cursor and circles it at twice its normal cruising speed.
 
 ![ASCII ocean running on the Omarchy desktop](assets/screenshot.png)
 
@@ -41,7 +41,7 @@ npm run typecheck
 npm run build
 ```
 
-The wallpaper uses a smaller grid and sharks, a monochrome light palette, a 20 fps rendering limit, and an ASCII logo overlay. The scene and fish behavior come from the original engine.
+The wallpaper uses a smaller grid and sharks, a monochrome light palette, a 20 fps rendering limit, and an ASCII logo overlay. The scene and fish behavior come from the original engine. The click-through wallpaper reads cursor coordinates locally from the Hyprland IPC socket, at most ten times per second; it does not log or transmit them.
 
 ## Credits and licenses
 
