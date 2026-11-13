@@ -1,6 +1,9 @@
 import { strict as assert } from 'node:assert';
 import { World } from '../src/world';
 Math.random = () => 0.5;
+const allSpecies = new World();
+allSpecies.resize(1200, 800, 4, 6);
+assert.deepEqual(new Set(allSpecies.sharks.map(shark => shark.kind)), new Set(['classic', 'hammerhead', 'zebra', 'tiger', 'greathammer', 'mako', 'thresher', 'nurse']), 'all supported shark species are present');
 function setup(distance: number, active: boolean) {
   const world = new World([{ kind: 'classic', size: 1 }], 1);
   world.resize(1200, 800, 4, 6);
@@ -33,4 +36,4 @@ assert.ok(d < near.shark.length * 1.5, `shark stays near the pointer, distance $
 near.world.pointer.active = false;
 for (let i = 0; i < 360; i++) near.world.step(1 / 60);
 assert.ok(Math.abs(near.shark.speed - cruise) < cruise * 0.02, 'shark returns to cruise speed when pointer is inactive');
-console.log('attraction, threshold, orbit, doubled speed, and return to cruise: passed');
+console.log('all shark species, attraction, threshold, orbit, doubled speed, and return to cruise: passed');

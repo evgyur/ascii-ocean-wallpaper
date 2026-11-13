@@ -23,12 +23,16 @@ export type SharkKind = "classic" | "hammerhead" | "zebra" | "tiger" | "greatham
 /** Which sharks to put in the water; size is relative to the biggest. */
 export type SharkSpec = { kind: SharkKind; size: number };
 
-// The landing hero: four of the same shark at different depths.
+// One of each shark supported by the original engine.
 const DEFAULT_SHARKS: SharkSpec[] = [
-  { kind: "classic", size: 1 },
-  { kind: "classic", size: 0.7 },
-  { kind: "classic", size: 0.84 },
-  { kind: "classic", size: 0.77 },
+  { kind: "greathammer", size: 1 },
+  { kind: "hammerhead", size: 0.86 },
+  { kind: "classic", size: 0.9 },
+  { kind: "tiger", size: 0.85 },
+  { kind: "zebra", size: 0.8 },
+  { kind: "mako", size: 0.77 },
+  { kind: "thresher", size: 0.82 },
+  { kind: "nurse", size: 0.75 },
 ];
 
 export interface Fish {
